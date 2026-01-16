@@ -185,8 +185,14 @@ Contributions are welcome!
 
 ## License
 
-MIT License  
+MIT License
 Free to use, modify, and distribute in both personal and commercial projects.
+
+---
+
+## Disclaimer
+
+**UnityKing is not responsible for any damage, data loss, or issues that may arise from the use of this tool.** Use at your own risk. Always backup your project before making bulk changes or modifications to materials and shaders.
 
 ---
 
