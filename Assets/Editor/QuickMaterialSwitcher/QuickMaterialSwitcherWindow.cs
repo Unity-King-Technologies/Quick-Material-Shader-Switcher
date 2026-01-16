@@ -72,7 +72,6 @@ public class QuickMaterialSwitcherWindow : EditorWindow
         var refreshButton = new Button(() => LoadMaterials()) { text = "Refresh" };
         toolbar.Add(refreshButton);
 
-        // Shader Tools Section
         var shaderTools = new Foldout() { text = "Shader Tools" };
         root.Add(shaderTools);
 
@@ -83,7 +82,6 @@ public class QuickMaterialSwitcherWindow : EditorWindow
         var switchShaderButton = new Button(() => SwitchShaderOnSelected(shaderDropdown.value)) { text = "Switch Shader on Selected Materials" };
         shaderTools.Add(switchShaderButton);
 
-        // Batch Replace Section
         var batchReplace = new Foldout() { text = "Batch Replace" };
         root.Add(batchReplace);
 
@@ -103,11 +101,9 @@ public class QuickMaterialSwitcherWindow : EditorWindow
         var randomAssignButton = new Button(() => RandomAssignMaterials()) { text = "Random Assign to Selected" };
         quickActions.Add(randomAssignButton);
 
-        // Material list
         materialScrollView = new ScrollView();
         root.Add(materialScrollView);
 
-        // Compare container (hidden by default)
         compareContainer = new VisualElement();
         compareContainer.style.display = DisplayStyle.None;
         compareContainer.style.flexDirection = FlexDirection.Row;
