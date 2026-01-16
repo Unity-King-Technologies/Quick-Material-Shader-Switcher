@@ -172,8 +172,16 @@ public class QuickMaterialSwitcherWindow : EditorWindow
         var thumbnail = new VisualElement();
         thumbnail.style.width = 50;
         thumbnail.style.height = 50;
-        thumbnail.style.backgroundImage = AssetPreview.GetAssetPreview(material);
-        thumbnail.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
+        var preview = AssetPreview.GetAssetPreview(material);
+        if (preview != null)
+        {
+            thumbnail.style.backgroundImage = preview;
+            thumbnail.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
+        }
+        else
+        {
+            thumbnail.style.backgroundColor = Color.gray;
+        }
         item.Add(thumbnail);
 
         // Info
@@ -227,15 +235,14 @@ public class QuickMaterialSwitcherWindow : EditorWindow
         var selectedObjects = Selection.gameObjects;
         if (selectedObjects.Length == 0) return;
 
-        Undo.RecordObjects(selectedObjects, "Assign Material");
+        var allRenderers = selectedObjects.SelectMany(obj => obj.GetComponentsInChildren<Renderer>()).ToArray();
+        if (allRenderers.Length == 0) return;
 
-        foreach (var obj in selectedObjects)
+        Undo.RecordObjects(allRenderers, "Assign Material");
+
+        foreach (var renderer in allRenderers)
         {
-            var renderers = obj.GetComponentsInChildren<Renderer>();
-            foreach (var renderer in renderers)
-            {
-                renderer.sharedMaterial = material;
-            }
+            renderer.sharedMaterial = material;
         }
     }
 
@@ -271,17 +278,27 @@ public class QuickMaterialSwitcherWindow : EditorWindow
     {
         if (!compareMode || previewMaterial == null) return;
 
+        // Clear previous content
+        compareContainer[0].Clear();
+
         // This would need more implementation for actual preview rendering
         // For simplicity, just show names
-        var leftLabel = compareContainer[0].Q<Label>();
-        if (leftLabel == null)
-        {
-            leftLabel = new Label();
-            compareContainer[0].Add(leftLabel);
-        }
-        leftLabel.text = previewMaterial.name;
+        var leftLabel = new Label(previewMaterial.name);
+        leftLabel.style.fontSize = 18;
+        leftLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+        compareContainer[0].Add(leftLabel);
 
-        // Right side could show current material or another
+        // Right side: show current material if any
+        var selectedRenderers = Selection.gameObjects.SelectMany(go => go.GetComponentsInChildren<Renderer>()).ToList();
+        if (selectedRenderers.Count > 0)
+        {
+            var currentMat = selectedRenderers[0].sharedMaterial;
+            compareContainer[1].Clear();
+            var rightLabel = new Label(currentMat != null ? currentMat.name : "No Material");
+            rightLabel.style.fontSize = 18;
+            rightLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+            compareContainer[1].Add(rightLabel);
+        }
     }
 
     void LoadFavorites()
@@ -358,17 +375,16 @@ public class QuickMaterialSwitcherWindow : EditorWindow
         var selectedObjects = Selection.gameObjects;
         if (selectedObjects.Length == 0 || allMaterials.Count == 0) return;
 
-        Undo.RecordObjects(selectedObjects, "Random Assign Materials");
+        var allRenderers = selectedObjects.SelectMany(obj => obj.GetComponentsInChildren<Renderer>()).ToArray();
+        if (allRenderers.Length == 0) return;
+
+        Undo.RecordObjects(allRenderers, "Random Assign Materials");
 
         var random = new System.Random();
-        foreach (var obj in selectedObjects)
+        foreach (var renderer in allRenderers)
         {
-            var renderers = obj.GetComponentsInChildren<Renderer>();
-            foreach (var renderer in renderers)
-            {
-                var randomMat = allMaterials[random.Next(allMaterials.Count)];
-                renderer.sharedMaterial = randomMat;
-            }
+            var randomMat = allMaterials[random.Next(allMaterials.Count)];
+            renderer.sharedMaterial = randomMat;
         }
     }
 
