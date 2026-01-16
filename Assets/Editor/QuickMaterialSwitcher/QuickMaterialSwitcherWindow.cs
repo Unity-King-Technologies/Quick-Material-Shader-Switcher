@@ -17,7 +17,7 @@ public class QuickMaterialSwitcherWindow : EditorWindow
     private bool showFavoritesOnly = false;
 
     // Innovative features
-    private Material previewMaterial; // For compare mode
+    private Material previewMaterial;
     private bool compareMode = false;
     private VisualElement compareContainer;
 
@@ -45,7 +45,6 @@ public class QuickMaterialSwitcherWindow : EditorWindow
     {
         root = rootVisualElement;
 
-        // Toolbar
         var toolbar = new Toolbar();
         root.Add(toolbar);
 
